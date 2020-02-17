@@ -1,10 +1,16 @@
+// Use the United States Geological Survey to find earthquakes withing last 7 days with a
+// magnitude greater than 2.5.
+
+
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
 
+// Start the Map at the United States
 var myMap = L.map("map", {
   center: [37.09, -95.71],
   zoom: 4
 });
 
+// Add street layer to map
 var streetmap =new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
   maxZoom: 18,
   id: "mapbox.streets",
@@ -12,8 +18,8 @@ var streetmap =new L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}
 }).addTo(myMap);
 
 var vColor = "";
-var vRadius = "";
 
+// Function to generate the PopUp Earthquake information
 function forEachFeature(feature, layer) {
 
   var popupContent = `<h3>Place: ${feature.properties.place} </h3> <hr> <p>Time: ${Date(feature.properties.time)} </p> <hr> <p>Magnitude: ${feature.properties.mag} </p>`;
@@ -21,23 +27,32 @@ function forEachFeature(feature, layer) {
   layer.bindPopup(popupContent);
 };
 
+// Function to generate Cirlcle mapping of earthquakes on map
+function findColor(mag) {
+  
+  if (mag > 4.5){
+    vColor = "#b30000";
+  }
+  else if (mag > 3.5){
+    vColor = "#e34a33";
+  }
+  else if (mag > 2.5){
+    vColor = "#fc8d59";
+  }
+  else {
+    vColor = "#fdcC8a";
+  };
+  return vColor;
+};
+
+// Setting the Cirlcle information
 var earthquake = L.geoJSON(null, {
   onEachFeature: forEachFeature, 
   pointToLayer: function (feature, latlng) {
-
-    if (feature.properties.mag > 4.5){
-      vColor = "#b30000";
-    }
-    else if (feature.properties.mag > 3.5){
-      vColor = "#e34a33";
-    }
-    else {
-      vColor = "#fc8d59";
-    };
     return L.circleMarker(latlng, {'radius': feature.properties.mag * 3,  
                                     'opacity': .5,
                                     'color': "white",
-                                    'fillColor': vColor, 
+                                    'fillColor': findColor(feature.properties.mag), 
                                     'fillOpacity': 0.75});
   }
 });
@@ -47,4 +62,19 @@ d3.json(queryUrl, function(data) {
   earthquake.addData(data);                              
 });
 
+// Add earthquake cirlce information to map
 earthquake.addTo(myMap);
+
+// Add Legend ?????????????
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info Legend'),
+        grades = [0, 2.5, 3.5, 4.5],
+        lables = ["#fdcC8a", "#fc8d59", "#e34a33", "#b30000"];
+
+    return div;
+};
+
+legend.addTo(myMap);
