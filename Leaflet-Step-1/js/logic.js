@@ -65,7 +65,7 @@ d3.json(queryUrl, function(data) {
 // Add earthquake cirlce information to map
 earthquake.addTo(myMap);
 
-// Add Legend ?????????????
+// Add Legend
 var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
