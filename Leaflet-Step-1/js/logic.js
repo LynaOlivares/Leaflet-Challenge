@@ -70,10 +70,17 @@ var legend = L.control({position: 'bottomright'});
 
 legend.onAdd = function (map) {
 
-    var div = L.DomUtil.create('div', 'info Legend'),
+    var div = L.DomUtil.create('div', 'info legend'),
         grades = [0, 2.5, 3.5, 4.5],
-        lables = ["#fdcC8a", "#fc8d59", "#e34a33", "#b30000"];
-
+        labels = ["#fdcC8a", "#fc8d59", "#e34a33", "#b30000"];
+        
+    for (var i = 0; i < grades.length; i++) {
+      div.innerHTML +=
+          '<i style="background:' + findColor(grades[i] + 1) + '"></i> ' +
+          grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+    
+    console.log(div);
     return div;
 };
 
